@@ -1,6 +1,10 @@
 # practice-mod
 このリポジトリは、Minecraft java edition の開発を練習するためのリポジトリです。
 
+## 今回使用する環境
+- Minecraft Version: 1.21.11
+- ModLoader: Fabric
+
 ## 開発環境セットアップ
 - 使用するIDE: IntelliJ IDEA
     - [公式サイト](https://www.jetbrains.com/ja-jp/idea/download/#section=windows)
