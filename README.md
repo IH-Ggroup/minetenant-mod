@@ -1,5 +1,5 @@
-# practice-mod
-このリポジトリは、Minecraft java edition の開発を練習するためのリポジトリです。
+# minetenant-mod
+このリポジトリは、Minecraft java edition の開発をするためのリポジトリです。
 
 ## 今回使用する環境
 - Minecraft Version: 1.21.11
