@@ -3,6 +3,8 @@ package com.minetenant.callapi.command;
 import com.minetenant.callapi.service.ApiService;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.command.CommandSource;
@@ -18,18 +20,21 @@ public class ApiCommand {
 
                         .executes(commandContext ->  {
                             ServerCommandSource source = commandContext.getSource();
+                            MinecraftServer server = source.getServer();
 
                             source.sendMessage(Text.literal("Calling API..."));
 
                             ApiService.fetchApiDataAsync("http://localhost:8787/api/hello")
                                     .thenAccept(response -> {
-                                        source.getServer().execute(() -> {
-                                            source.sendMessage(Text.literal("API Response: " + response));
+                                        server.execute(() -> {
+                                            Text message = Text.literal("Successfully fetched API data: " + response);
+                                            server.getPlayerManager().broadcast(message, false);
                                         });
                                     })
                                     .exceptionally(throwable -> {
-                                        source.getServer().execute(() -> {
-                                            source.sendMessage(Text.literal("Error calling API: " + throwable.getMessage()));
+                                        server.execute(() -> {
+                                            Text errorMessage = Text.literal("Failed to fetch API data: " + throwable.getMessage());
+                                            server.getPlayerManager().broadcast(errorMessage, false);
                                         });
                                         return null;
                                     });
