@@ -1,6 +1,7 @@
 package com.minetenant.callapi.command;
 
 import com.minetenant.callapi.service.ApiService;
+import com.minetenant.callapi.config.ApiConfig;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.network.message.MessageType;
@@ -24,7 +25,7 @@ public class ApiCommand {
 
                             source.sendMessage(Text.literal("Calling API..."));
 
-                            ApiService.fetchApiDataAsync("http://localhost:8787/api/hello")
+                            ApiService.fetchApiDataAsync(ApiConfig.getApiUrl())
                                     .thenAccept(response -> {
                                         server.execute(() -> {
                                             Text message = Text.literal("Successfully fetched API data: " + response);
