@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "minetenantclient",
+  "version": "${version}",
+
+  "name": "MinetenantClient",
+  "description": "",
+  "authors": [],
+  "contact": {},
+
+  "license": "All-Rights-Reserved",
+  "icon": "assets/minetenantclient/icon.png",
+
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": ["com.minetenant.minetenantclient.client.MinetenantclientDataGenerator"],
+    "client": ["com.minetenant.minetenantclient.client.MinetenantclientClient"],
+    "main": ["com.minetenant.minetenantclient.Minetenantclient"]
+  },
+
+  "mixins": [
+    "minetenantclient.mixins.json"
+    ,{
+      "config": "minetenantclient.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
