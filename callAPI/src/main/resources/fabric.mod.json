@@ -9,21 +9,11 @@
   "contact": {},
 
   "license": "All-Rights-Reserved",
-  "icon": "assets/callapi/icon.png",
 
   "environment": "server",
   "entrypoints": {
-    "fabric-datagen": ["com.minetenant.callapi.client.CallapiDataGenerator"],
     "main": ["com.minetenant.callapi.Callapi"]
   },
-
-  "mixins": [
-    "callapi.mixins.json"
-    ,{
-      "config": "callapi.client.mixins.json",
-      "environment": "client"
-    }
-  ],
 
   "depends": {
     "fabricloader": ">=${loader_version}",
