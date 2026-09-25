@@ -1,0 +1,11 @@
+{
+    "minetenantclient.gui.title.main": "Minetenant",
+    "minetenantclient.gui.title.configs.generic": "Minetenant 設定 - 一般",
+    "minetenantclient.gui.title.configs.hotkeys": "Minetenant 設定 - キー割り当て",
+    "minetenantclient.gui.button.generic_settings": "一般設定",
+    "minetenantclient.gui.button.hotkey_settings": "キー割り当て",
+
+    "config.comment.enablefeature": "機能の有効化",
+    "config.comment.speed": "速度設定",
+    "config.comment.opengui": "GUI設定画面を開く"
+}
