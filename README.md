@@ -5,8 +5,9 @@
 - MinetenantClient : Minetenant用のmod
 ## 今回使用する環境
 - Minecraft Version: 1.21.11
-- ModLoader: Fabric
-- 
+- ModLoader: [Fabric](https://fabricmc.net/use/)
+## 必須依存mod
+- [MaLiLib](https://modrinth.com/mod/malilib) by masa
 
 ## 開発環境セットアップ
 - 使用するIDE: IntelliJ IDEA
@@ -20,7 +21,3 @@
     - 1.18 ~ 1.20.4 / JDK 17
     - 1.20.5 ~ 1.21.1 / JDK 21
     - 26.1 ~ / JDK 25
-
-## 使用する環境
-- ModLoader: Fabric
-    - [公式サイト](https://fabricmc.net/use/)
