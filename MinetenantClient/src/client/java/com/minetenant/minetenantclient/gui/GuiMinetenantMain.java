@@ -3,6 +3,7 @@ package com.minetenant.minetenantclient.gui;
 import fi.dy.masa.malilib.gui.BaseScreen;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
+import fi.dy.masa.malilib.util.StringUtils;
 
 import com.minetenant.minetenantclient.Reference;
 
@@ -17,7 +18,7 @@ public class GuiMinetenantMain extends BaseScreen {
     private static final int BUTTON_MARGIN = 4;
 
     public GuiMinetenantMain() {
-        this.setTitle(Reference.MOD_NAME);
+        this.setTitle(StringUtils.translate("minetenantclient.gui.title.main"));
     }
 
     @Override
@@ -29,8 +30,8 @@ public class GuiMinetenantMain extends BaseScreen {
         int x = this.getScreenWidth() / 2 - BUTTON_WIDTH / 2;
         int y = this.getScreenHeight() / 2 - (BUTTON_HEIGHT * 2 + BUTTON_MARGIN * 3) / 2;
 
-        y = this.createMenuButton(x, y, "一般設定", () -> new GuiConfigsGeneric(this));
-        y = this.createMenuButton(x, y, "キー割り当て", () -> new GuiConfigsHotkeys(this));
+        y = this.createMenuButton(x, y, StringUtils.translate("minetenantclient.gui.button.generic_settings"), () -> new GuiConfigsGeneric(this));
+        y = this.createMenuButton(x, y, StringUtils.translate("minetenantclient.gui.button.hotkey_settings"), () -> new GuiConfigsHotkeys(this));
 
         // ここに今後のメニュー項目（Litematica でいう "Load Schematics" や
         // "Save Schematics" のようなもの）を同じ要領で追加していく。

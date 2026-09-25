@@ -1,4 +1,11 @@
 {
+    "minetenantclient.gui.title.main": "Minetenant",
     "minetenantclient.gui.title.configs.generic": "Minetenant Settings - Generic",
-    "minetenantclient.gui.title.configs.hotkeys": "Minetenant Settings - Hotkeys"
+    "minetenantclient.gui.title.configs.hotkeys": "Minetenant Settings - Hotkeys",
+    "minetenantclient.gui.button.generic_settings": "Generic Settings",
+    "minetenantclient.gui.button.hotkey_settings": "Hotkeys",
+
+    "config.comment.enablefeature": "Enable the feature",
+    "config.comment.speed": "Speed setting",
+    "config.comment.opengui": "Open the GUI menu"
 }
