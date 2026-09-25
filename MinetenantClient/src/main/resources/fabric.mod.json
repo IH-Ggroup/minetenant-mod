@@ -5,7 +5,7 @@
 
   "name": "MinetenantClient",
   "description": "",
-  "authors": [],
+  "authors": ["takarea86"],
   "contact": {},
 
   "license": "All-Rights-Reserved",
@@ -29,6 +29,7 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
+    "malilib": ">=0.27.20",
     "minecraft": "${minecraft_version}"
   }
 }
