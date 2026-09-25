@@ -50,7 +50,7 @@ dependencies {
 
         modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    implementation "maven.modrinth:GcWjdA9I:loabWpyU"
+    modImplementation "maven.modrinth:GcWjdA9I:loabWpyU"
 }
 
 processResources {
