@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "minetenantserver",
+  "version": "${version}",
+
+  "name": "MinetenantServer",
+  "description": "test",
+  "authors": [],
+  "contact": {},
+
+  "license": "All-Rights-Reserved",
+  "icon": "assets/minetenantserver/icon.png",
+
+  "environment": "server",
+  "entrypoints": {
+    "fabric-datagen": ["com.minetenant.minetenantserver.client.MinetenantserverDataGenerator"],
+    "main": ["com.minetenant.minetenantserver.Minetenantserver"]
+  },
+
+  "mixins": [
+    "minetenantserver.mixins.json"
+    ,{
+      "config": "minetenantserver.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
