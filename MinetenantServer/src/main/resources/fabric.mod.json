@@ -5,7 +5,12 @@
 
   "name": "MinetenantServer",
   "description": "test",
-  "authors": [],
+  "authors": [
+    "Minetenant",
+    {
+      "name": "takarea86"
+    }
+  ],
   "contact": {},
 
   "license": "All-Rights-Reserved",
