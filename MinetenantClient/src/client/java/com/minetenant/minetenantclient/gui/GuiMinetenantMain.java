@@ -30,8 +30,8 @@ public class GuiMinetenantMain extends BaseScreen {
         int x = this.getScreenWidth() / 2 - BUTTON_WIDTH / 2;
         int y = this.getScreenHeight() / 2 - (BUTTON_HEIGHT * 3 + BUTTON_MARGIN * 4) / 2;
 
-        y = this.createMenuButton(x, y, StringUtils.translate("minetenantclient.gui.button.generic_settings"), () -> new GuiConfigsGeneric(this));
-        y = this.createMenuButton(x, y, StringUtils.translate("minetenantclient.gui.button.hotkey_settings"), () -> new GuiConfigsHotkeys(this));
+        y = this.createMenuButton(x, y, StringUtils.translate("minetenantclient.gui.button.generic_settings"), () -> new GuiConfigs(this, GuiConfigs.Tab.GENERIC));
+        y = this.createMenuButton(x, y, StringUtils.translate("minetenantclient.gui.button.hotkey_settings"), () -> new GuiConfigs(this, GuiConfigs.Tab.HOTKEYS));
         y = this.createMenuButton(x, y, StringUtils.translate("minetenantclient.gui.button.debug"), () -> new GuiMinetenantDebug(this));
 
         // ここに今後のメニュー項目（Litematica でいう "Load Schematics" や
