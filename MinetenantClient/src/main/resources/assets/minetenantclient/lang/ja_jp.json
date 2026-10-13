@@ -12,7 +12,7 @@
     "minetenantclient.debug.log.not_connected": "サーバーに接続していません",
     "minetenantclient.debug.log.server_mod_not_found": "サーバーMODが見つかりません",
     "minetenantclient.debug.log.ping_sent": "Ping送信",
-    "minetenantclient.debug.log.success": "成功: {0}ms",
+    "minetenantclient.debug.log.success": "成功: %sms",
     "minetenantclient.debug.log.timeout": "失敗: 応答なし(3秒タイムアウト)",
 
     "config.comment.enablefeature": "機能の有効化",

@@ -12,7 +12,7 @@
     "minetenantclient.debug.log.not_connected": "Not connected to a server",
     "minetenantclient.debug.log.server_mod_not_found": "Server mod not found",
     "minetenantclient.debug.log.ping_sent": "Ping sent",
-    "minetenantclient.debug.log.success": "Success: {0}ms",
+    "minetenantclient.debug.log.success": "Success: %sms",
     "minetenantclient.debug.log.timeout": "Failed: no response (3s timeout)",
 
     "config.comment.enablefeature": "Enable the feature",
