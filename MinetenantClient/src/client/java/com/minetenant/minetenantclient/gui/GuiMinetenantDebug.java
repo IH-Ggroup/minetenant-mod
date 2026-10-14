@@ -13,7 +13,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 import com.minetenant.minetenantclient.debug.DebugLog;
 import com.minetenant.minetenantclient.network.ApiClient;
-import com.minetenant.minetenantclient.network.PingClient;
+import com.minetenant.minetenantclient.network.ServerPingClient;
 
 /**
  * デバッグ画面。疎通確認ボタンと、そのログを表示する。
@@ -43,9 +43,9 @@ public class GuiMinetenantDebug extends BaseScreen {
 
         this.clearElements();
 
-        ButtonGeneric pingButton = new ButtonGeneric(MARGIN, 30, BUTTON_WIDTH, BUTTON_HEIGHT,
-                StringUtils.translate("minetenantclient.gui.button.ping"));
-        this.addButton(pingButton, (btn, mouseButton) -> PingClient.sendPing());
+        ButtonGeneric serverPingButton = new ButtonGeneric(MARGIN, 30, BUTTON_WIDTH, BUTTON_HEIGHT,
+                StringUtils.translate("minetenantclient.gui.button.server_ping"));
+        this.addButton(serverPingButton, (btn, mouseButton) -> ServerPingClient.sendPing());
 
         ButtonGeneric apiButton = new ButtonGeneric(MARGIN + BUTTON_WIDTH + 4, 30, BUTTON_WIDTH, BUTTON_HEIGHT,
                 StringUtils.translate("minetenantclient.gui.button.api_ping"));
