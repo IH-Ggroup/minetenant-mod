@@ -11,33 +11,33 @@ import com.minetenant.minetenantclient.debug.DebugLog.Level;
 /**
  * サーバーMODとの疎通確認(Ping送信 / Pong受信 / タイムアウト判定)を担当する。
  */
-public final class PingClient {
+public final class ServerPingClient {
 
     private static final int TIMEOUT_TICKS = 60;
 
     private static boolean waiting;
     private static int remainingTicks;
 
-    private PingClient() {
+    private ServerPingClient() {
     }
 
     public static void sendPing() {
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.player == null || client.getNetworkHandler() == null) {
-            DebugLog.add(Level.ERROR, StringUtils.translate("minetenantclient.debug.log.not_connected"));
+            DebugLog.add(Level.ERROR, StringUtils.translate("minetenantclient.debug.log.server_ping_not_connected"));
             return;
         }
 
         if (!ClientPlayNetworking.canSend(PingPayload.ID)) {
-            DebugLog.add(Level.ERROR, StringUtils.translate("minetenantclient.debug.log.server_mod_not_found"));
+            DebugLog.add(Level.ERROR, StringUtils.translate("minetenantclient.debug.log.server_ping_mod_not_found"));
             return;
         }
 
         ClientPlayNetworking.send(new PingPayload(System.nanoTime()));
         waiting = true;
         remainingTicks = TIMEOUT_TICKS;
-        DebugLog.add(Level.INFO, StringUtils.translate("minetenantclient.debug.log.ping_sent"));
+        DebugLog.add(Level.INFO, StringUtils.translate("minetenantclient.debug.log.server_ping_sent"));
     }
 
     public static void onPong(PongPayload payload) {
@@ -47,7 +47,7 @@ public final class PingClient {
 
         waiting = false;
         long millis = (System.nanoTime() - payload.sentAt()) / 1_000_000L;
-        DebugLog.add(Level.SUCCESS, StringUtils.translate("minetenantclient.debug.log.success", millis));
+        DebugLog.add(Level.SUCCESS, StringUtils.translate("minetenantclient.debug.log.server_ping_success", millis));
     }
 
     /** クライアントのtickごとに呼ぶ。応答が来ないまま時間が過ぎたら失敗扱いにする。 */
@@ -58,7 +58,7 @@ public final class PingClient {
 
         if (--remainingTicks <= 0) {
             waiting = false;
-            DebugLog.add(Level.ERROR, StringUtils.translate("minetenantclient.debug.log.timeout"));
+            DebugLog.add(Level.ERROR, StringUtils.translate("minetenantclient.debug.log.server_ping_timeout"));
         }
     }
 
