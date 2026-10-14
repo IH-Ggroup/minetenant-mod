@@ -16,3 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `docs/api-documentation`
 - `chore/update-dependencies`
 - `release/v1.0.0`
+
+# PR
+- PRの内容は基本的にテンプレートに沿った形式で記述すること。
+- なるべく長くならないように、人が読みやすい形で記述すること。
