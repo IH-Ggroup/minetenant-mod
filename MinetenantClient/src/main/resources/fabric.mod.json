@@ -5,7 +5,12 @@
 
   "name": "MinetenantClient",
   "description": "",
-  "authors": ["takarea86"],
+  "authors": [
+    "Minetenant",
+    {
+      "name": "takarea86"
+    }
+  ],
   "contact": {},
 
   "license": "All-Rights-Reserved",
