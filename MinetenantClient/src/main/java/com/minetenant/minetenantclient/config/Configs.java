@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.config.options.ConfigInteger;
+import fi.dy.masa.malilib.config.options.ConfigString;
 import fi.dy.masa.malilib.config.options.ConfigBase;
 
 import java.util.List;
@@ -14,9 +15,12 @@ public class Configs {
         public static final ConfigBoolean ENABLE_FEATURE = new ConfigBoolean("enableFeature", true, "機能の有効化");
         public static final ConfigInteger SPEED = new ConfigInteger("speed", 10, 1, 100, "速度設定");
 
+        public static final ConfigString API_URL = new ConfigString("apiUrl", "http://localhost:8787/api/hello", "疎通確認で呼び出すAPIのURL");
+
         public static final List<ConfigBase> OPTIONS = ImmutableList.of(
                 ENABLE_FEATURE,
-                SPEED
+                SPEED,
+                API_URL
         );
     }
     // --- Keybind（ホットキー）の定義クラスを追加 ---
