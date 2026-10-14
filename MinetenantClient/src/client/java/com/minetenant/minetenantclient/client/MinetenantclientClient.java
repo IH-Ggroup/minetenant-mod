@@ -16,7 +16,7 @@ import com.minetenant.minetenantclient.Reference;
 import com.minetenant.minetenantclient.config.ConfigHandler;
 import com.minetenant.minetenantclient.config.HotkeyHandler;
 import com.minetenant.minetenantclient.gui.GuiConfigs;
-import com.minetenant.minetenantclient.network.PingClient;
+import com.minetenant.minetenantclient.network.ServerPingClient;
 import com.minetenant.minetenantclient.network.PongPayload;
 
 public class MinetenantclientClient implements ClientModInitializer {
@@ -31,9 +31,9 @@ public class MinetenantclientClient implements ClientModInitializer {
         TickHandler.getInstance().registerClientTickHandler(HotkeyHandler.INSTANCE);
 
         // 疎通確認: Pong受信、タイムアウト判定、切断時のリセット
-        ClientPlayNetworking.registerGlobalReceiver(PongPayload.ID, (payload, context) -> PingClient.onPong(payload));
-        ClientTickEvents.END_CLIENT_TICK.register(client -> PingClient.onClientTick());
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> PingClient.reset());
+        ClientPlayNetworking.registerGlobalReceiver(PongPayload.ID, (payload, context) -> ServerPingClient.onPong(payload));
+        ClientTickEvents.END_CLIENT_TICK.register(client -> ServerPingClient.onClientTick());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ServerPingClient.reset());
 
         // 初回表示からMOD切り替えプルダウンを出すため、設定画面を先に登録しておく
         Registry.CONFIG_SCREEN.registerConfigScreenFactory(
