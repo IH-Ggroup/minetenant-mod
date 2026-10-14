@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
+import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.event.TickHandler;
 
@@ -12,6 +13,7 @@ import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.data.ModInfo;
 
 import com.minetenant.minetenantclient.Reference;
+import com.minetenant.minetenantclient.config.ConfigHandler;
 import com.minetenant.minetenantclient.config.HotkeyHandler;
 import com.minetenant.minetenantclient.gui.GuiConfigs;
 import com.minetenant.minetenantclient.network.PingClient;
@@ -21,6 +23,10 @@ public class MinetenantclientClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // 設定の保存・読み込み
+        ConfigManager.getInstance().registerConfigHandler(Reference.MOD_ID, ConfigHandler.INSTANCE);
+        ConfigHandler.INSTANCE.load();
+
         InputEventHandler.getKeybindManager().registerKeybindProvider(HotkeyHandler.INSTANCE);
         TickHandler.getInstance().registerClientTickHandler(HotkeyHandler.INSTANCE);
 
