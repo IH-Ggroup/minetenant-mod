@@ -30,3 +30,7 @@ build/
 # IDE
 .idea/
 *.iml
+
+# Server設定（tokenを含む）
+config/minetenant-server.properties
+**/run/config/minetenant-server.properties
