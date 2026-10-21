@@ -24,7 +24,7 @@ public final class HonoConfigLoader {
     private static final long MIN_POLL_SECONDS = 2;
 
     private static final String TEMPLATE = """
-            # MineTenant Server 設定（このファイルはgitに入れないこと）
+            # MineTenant Server 設定
             # Honoのbase URL。endpointは含めない
             hono.base-url=http://localhost:8787
             # Server token。発行後に設定する（未設定でも起動はできる）
@@ -53,7 +53,7 @@ public final class HonoConfigLoader {
             }
             return parse(props);
         } catch (IOException e) {
-            throw new HonoConfigException(FILE_NAME + " の読み書きに失敗しました: " + e.getMessage(), e);
+            throw new HonoConfigException("Failed to read or write " + FILE_NAME + ": " + e.getMessage(), e);
         }
     }
 
@@ -68,7 +68,7 @@ public final class HonoConfigLoader {
         Duration poll = parseSeconds(props, KEY_POLL_INTERVAL, MIN_POLL_SECONDS, errors);
 
         if (!errors.isEmpty()) {
-            throw new HonoConfigException(FILE_NAME + " に問題があります:\n - " + String.join("\n - ", errors));
+            throw new HonoConfigException("Invalid " + FILE_NAME + ":\n - " + String.join("\n - ", errors));
         }
         return new HonoConfig(baseUrl, token, connect, read, poll);
     }
@@ -76,7 +76,7 @@ public final class HonoConfigLoader {
     private static URI parseUrl(Properties props, List<String> errors) {
         String raw = props.getProperty(KEY_BASE_URL);
         if (raw == null || raw.isBlank()) {
-            errors.add(KEY_BASE_URL + " が未設定です");
+            errors.add(KEY_BASE_URL + " is not set");
             return null;
         }
         try {
@@ -84,12 +84,12 @@ public final class HonoConfigLoader {
             String scheme = uri.getScheme();
             boolean httpScheme = "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
             if (!httpScheme || uri.getHost() == null) {
-                errors.add(KEY_BASE_URL + " は http:// か https:// で始まるURLにしてください: " + raw);
+                errors.add(KEY_BASE_URL + " must be a URL starting with http:// or https://: " + raw);
                 return null;
             }
             return uri;
         } catch (IllegalArgumentException e) {
-            errors.add(KEY_BASE_URL + " がURLとして不正です: " + raw);
+            errors.add(KEY_BASE_URL + " is not a valid URL: " + raw);
             return null;
         }
     }
@@ -97,18 +97,18 @@ public final class HonoConfigLoader {
     private static Duration parseSeconds(Properties props, String key, long min, List<String> errors) {
         String raw = props.getProperty(key);
         if (raw == null || raw.isBlank()) {
-            errors.add(key + " が未設定です");
+            errors.add(key + " is not set");
             return null;
         }
         try {
             long seconds = Long.parseLong(raw.trim());
             if (seconds < min) {
-                errors.add(key + " は" + min + "秒以上にしてください: " + raw);
+                errors.add(key + " must be at least " + min + " seconds: " + raw);
                 return null;
             }
             return Duration.ofSeconds(seconds);
         } catch (NumberFormatException e) {
-            errors.add(key + " が数値ではありません: " + raw);
+            errors.add(key + " is not a number: " + raw);
             return null;
         }
     }

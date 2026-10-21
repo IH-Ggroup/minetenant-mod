@@ -28,9 +28,9 @@ public class Minetenantserver implements ModInitializer {
         // 設定が不正なら例外でサーバー起動を止める
         config = HonoConfigLoader.load(
                 FabricLoader.getInstance().getConfigDir().resolve(HonoConfigLoader.FILE_NAME));
-        LOGGER.info("Hono設定を読み込みました: {}", config);
+        LOGGER.info("Loaded Hono config: {}", config);
         if (!config.hasToken()) {
-            LOGGER.warn("server token が未設定です。認証が必要なAPIは呼べません");
+            LOGGER.warn("Server token is not set. APIs that require authentication cannot be called");
         }
 
         PayloadTypeRegistry.playC2S().register(PingPayload.ID, PingPayload.CODEC);
@@ -38,7 +38,7 @@ public class Minetenantserver implements ModInitializer {
 
         // Ping を受けたら、受け取った値をそのまま Pong で返す
         ServerPlayNetworking.registerGlobalReceiver(PingPayload.ID, (payload, context) -> {
-            LOGGER.info("Ping受信: {}", context.player().getName().getString());
+            LOGGER.info("Received ping: {}", context.player().getName().getString());
             ServerPlayNetworking.send(context.player(), new PongPayload(payload.sentAt()));
         });
     }

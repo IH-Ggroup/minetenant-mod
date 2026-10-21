@@ -18,7 +18,7 @@ public record HonoConfig(
     @Override
     public String toString() {
         return "HonoConfig[baseUrl=" + baseUrl
-                + ", serverToken=" + (hasToken() ? "****" : "(未設定)")
+                + ", serverToken=" + (hasToken() ? "****" : "(not set)")
                 + ", connectTimeout=" + connectTimeout
                 + ", readTimeout=" + readTimeout
                 + ", pollInterval=" + pollInterval + "]";
