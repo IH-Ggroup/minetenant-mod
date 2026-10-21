@@ -5,7 +5,6 @@
 - MinetenantClient : Minetenant用のmod
 - MinetenantServer : Minetenant用のServer mod
 ## Server設定
-初回起動時に `config/minetenant-server.properties` が生成されます。tokenを含むためgitには入れないでください。
 
 | キー | 内容 |
 | --- | --- |
