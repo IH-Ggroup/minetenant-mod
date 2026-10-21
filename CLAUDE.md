@@ -1,7 +1,7 @@
 # MineTenant mod
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 # 基本ルール
-- 変更をpushする前にユーザーに確認を行うこと。
+- 変更をcommit,pushする前にユーザーに確認を行うこと。
 - コミットメッセージとソースコード内のコメント・メッセージ・説明は、日本語で簡潔に書く。
 
 # ブランチ
