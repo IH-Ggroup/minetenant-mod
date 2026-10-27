@@ -39,6 +39,32 @@ public final class JsonCodec {
         }
     }
 
+    /** リクエスト本文をJSON文字列にする。 */
+    public static String encode(Object body) {
+        return GSON.toJson(body);
+    }
+
+    /** エラー応答の `code` と `message` を読む。形式が違っても例外にせず、取れない値はnullにする。 */
+    public static ErrorBody decodeError(String body) {
+        try {
+            JsonElement root = JsonParser.parseString(body);
+            if (!root.isJsonObject()) {
+                return new ErrorBody(null, null);
+            }
+            JsonObject object = root.getAsJsonObject();
+            return new ErrorBody(text(object.get("code")), text(object.get("message")));
+        } catch (JsonParseException e) {
+            return new ErrorBody(null, null);
+        }
+    }
+
+    public record ErrorBody(String code, String message) {
+    }
+
+    private static String text(JsonElement element) {
+        return element != null && element.isJsonPrimitive() ? element.getAsString() : null;
+    }
+
     private static <T> ApiResult<T> invalid() {
         return new ApiResult.Failure<>(ApiError.of(ApiError.Kind.INVALID_JSON));
     }
