@@ -11,7 +11,8 @@ public record ApiError(Kind kind, int status) {
         TIMEOUT("API request timed out"),
         NETWORK("API connection failed"),
         INVALID_REQUEST("Invalid API request"),
-        REJECTED("API request rejected");
+        REJECTED("API request rejected"),
+        TOKEN_NOT_SET("Server token is not set");
 
         private final String message;
 
