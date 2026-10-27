@@ -2,14 +2,18 @@ package com.minetenant.minetenantserver;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.minetenant.minetenantserver.config.HonoConfig;
 import com.minetenant.minetenantserver.config.HonoConfigLoader;
+import com.minetenant.minetenantserver.http.HonoApiClient;
 import com.minetenant.minetenantserver.network.PingPayload;
 import com.minetenant.minetenantserver.network.PongPayload;
 
@@ -19,8 +23,14 @@ public class Minetenantserver implements ModInitializer {
 
     private static HonoConfig config;
 
+    private static HonoApiClient apiClient;
+
     public static HonoConfig getConfig() {
         return config;
+    }
+
+    public static HonoApiClient getApiClient() {
+        return apiClient;
     }
 
     @Override
@@ -32,6 +42,10 @@ public class Minetenantserver implements ModInitializer {
         if (!config.hasToken()) {
             LOGGER.warn("Server token is not set. APIs that require authentication cannot be called");
         }
+
+        // 認証ヘッダ名はapi.mdで未確定のため、ここでは付けない
+        apiClient = new HonoApiClient(config, Map.of());
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> apiClient.close());
 
         PayloadTypeRegistry.playC2S().register(PingPayload.ID, PingPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(PongPayload.ID, PongPayload.CODEC);
