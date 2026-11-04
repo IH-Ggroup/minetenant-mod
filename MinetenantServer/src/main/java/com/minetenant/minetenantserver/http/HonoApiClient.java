@@ -36,6 +36,8 @@ public final class HonoApiClient implements AutoCloseable {
     private static final Logger LOGGER = LoggerFactory.getLogger("minetenantserver");
     private static final int DEFAULT_MAX_IN_FLIGHT = 8;
     private static final int MAX_THREADS = 4;
+    // 仮置き。backendのapi.mdで確定したら直す
+    private static final String REQUEST_ID_HEADER = "X-Request-Id";
 
     private final String baseUrl;
     private final HonoConfig config;
@@ -81,14 +83,10 @@ public final class HonoApiClient implements AutoCloseable {
     }
 
     /**
-     * JSON本文をPOSTする。Server認証headerとrequestIdを付ける。
+     * JSON本文をPOSTする。requestIdを付ける。Server認証はbackendの方式が確定するまで付けない。
      * requestIdは呼び出し側が持ち、結果不明(Unknown)からの再送では同じ値を渡すこと。
      */
     public <T> CompletableFuture<PostOutcome<T>> post(String path, String requestId, Object body, Type type) {
-        if (!config.hasToken()) {
-            return CompletableFuture.completedFuture(
-                    loggedPost(path, new PostOutcome.NotSent<>(ApiError.Kind.TOKEN_NOT_SET)));
-        }
         String json;
         try {
             json = JsonCodec.encode(body);
@@ -98,12 +96,11 @@ public final class HonoApiClient implements AutoCloseable {
         }
         return this.<PostOutcome<T>>execute(
                 () -> {
-                    HttpRequest.Builder builder = newRequest(path)
+                    return newRequest(path)
                             .header("Content-Type", "application/json; charset=utf-8")
-                            .header(ServerAuthHeaderProvider.REQUEST_ID_HEADER, requestId)
-                            .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8));
-                    ServerAuthHeaderProvider.headers(config).forEach(builder::header);
-                    return builder.build();
+                            .header(REQUEST_ID_HEADER, requestId)
+                            .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
+                            .build();
                 },
                 kind -> loggedPost(path, new PostOutcome.NotSent<>(kind)),
                 (response, throwable) -> loggedPost(path, throwable == null
@@ -173,6 +170,10 @@ public final class HonoApiClient implements AutoCloseable {
                 return new PostOutcome.Success<>(success.data());
             }
             return new PostOutcome.Unknown<>(((ApiResult.Failure<T>) decoded).error().kind());
+        }
+        // 5xxは処理が完了した後に失敗した可能性があるため、失敗と決めつけず結果不明にする
+        if (status >= 500) {
+            return new PostOutcome.Unknown<>(ApiError.Kind.SERVER_ERROR);
         }
         JsonCodec.ErrorBody error = JsonCodec.decodeError(response.body());
         return new PostOutcome.BusinessError<>(status, error.code(), error.message());

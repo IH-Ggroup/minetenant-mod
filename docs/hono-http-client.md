@@ -11,7 +11,6 @@
 | `ApiResult` | GETの結果。`Success` / `Failure` |
 | `PostOutcome` | POSTの結果。`Success` / `BusinessError` / `Unknown` / `NotSent` |
 | `ApiError` | 失敗の種類。messageは固定文言で、URL・本文・tokenを含めない |
-| `ServerAuthHeaderProvider` | Server認証headerとrequest ID headerの名前をまとめる |
 | `JsonCodec` | `{ "data": T }` の変換、リクエスト本文のJSON化、エラー本文の読み取り |
 
 ## 使い方
@@ -37,15 +36,15 @@ POSTは副作用があるため、「失敗」と「結果不明」を分ける�
 | 結果 | 意味 | 呼び出し側の対応 |
 | --- | --- | --- |
 | `Success(data)` | 200/201で、`data` を変換できた | 結果を使う |
-| `BusinessError(status, code, message)` | Honoが応答した確定済みのエラー(401・409・422・500など) | `status`ではなく`code`で分岐する。`code`が無い場合はnull |
-| `Unknown(reason)` | timeout、送信後の切断、成功statusなのに本文が不正 | 失敗と決めつけない。同じrequestIdで確認・再送する |
-| `NotSent(reason)` | 送られていない(token未設定、同時実行数超過、close後、接続できない) | 二重実行にならないので再送してよい |
+| `BusinessError(status, code, message)` | Honoが応答した確定済みのエラー(401・409・422など。5xxは含まない) | `status`ではなく`code`で分岐する。`code`が無い場合はnull |
+| `Unknown(reason)` | timeout、送信後の切断、5xx、成功statusなのに本文が不正 | 失敗と決めつけない。同じrequestIdで確認・再送する |
+| `NotSent(reason)` | 送られていない(同時実行数超過、close後、接続できない) | 二重実行にならないので再送してよい |
 
 ### 設計上の判断
 
 - **request IDは呼び出し側が持つ。** 自動採番だと、結果不明からの再送で別のIDになり、backendの冪等性(同じIDなら再実行しない)が効かないため。
 - **成功statusで本文が不正な場合は`Unknown`。** 処理は済んでいる可能性が高く、失敗にすると二重実行を招くため。
-- **500は`BusinessError`にする。** 区別は`status`でできる。再送するかどうかは呼び出し側が、同じrequestIdで判断する。
+- **5xxは`Unknown`にする。** DB保存後に応答を返せず500になる場合があり、失敗と決めつけると新しいrequestIdでの二重実行を招くため。同じrequestIdで確認・再送する。
 - **GETは`ApiResult`のまま。** GETは副作用がなく、timeoutしても再取得すればよいので、「結果不明」は不要。型を分けているのは意図的。
 - **無限retryはしない。** 再送が必要なら、呼び出し側が回数と間隔を決める。
 
@@ -59,12 +58,10 @@ POSTは副作用があるため、「失敗」と「結果不明」を分ける�
 ## 未確定事項(仮置き)
 
 backendの `docs/api.md` では、Fabric Server向けの認証・最終pathは「B-CONTRACT-05以降」で未確定。
-次の値は仮置きで、`ServerAuthHeaderProvider` だけを直せば差し替えられる。
+- **Server認証は未実装。** backendで方式を決めて検証処理を作ってから、別PRでクライアント側を入れる(`hono.server-token` の設定項目だけは先に用意してある)。
+- request ID header: `X-Request-Id` は仮置き(`HonoApiClient.REQUEST_ID_HEADER`)。
 
-- 認証header: `Authorization: Bearer <token>`
-- request ID header: `X-Request-Id`
-
-契約が確定したら、この2つを確定値に直し、この節を消すこと。
+契約が確定したら、この節を消すこと。
 backendのAPIは、本文に `requestId` を持つものがある。その場合、本文の`requestId`とheaderの値は呼び出し側で同じにする。
 
 ## テスト
