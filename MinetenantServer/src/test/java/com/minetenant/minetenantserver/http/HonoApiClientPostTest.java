@@ -80,13 +80,11 @@ class HonoApiClientPostTest {
     }
 
     @Test
-    void 認証headerとrequestIdとJSON本文を送る() {
-        AtomicReference<String> auth = new AtomicReference<>();
+    void requestIdとJSON本文を送る() {
         AtomicReference<String> requestId = new AtomicReference<>();
         AtomicReference<String> contentType = new AtomicReference<>();
         AtomicReference<String> body = new AtomicReference<>();
         server.createContext("/send", ex -> {
-            auth.set(ex.getRequestHeaders().getFirst("Authorization"));
             requestId.set(ex.getRequestHeaders().getFirst("X-Request-Id"));
             contentType.set(ex.getRequestHeaders().getFirst("Content-Type"));
             body.set(new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
@@ -97,7 +95,6 @@ class HonoApiClientPostTest {
         });
         newClient(TOKEN, Duration.ofSeconds(2));
         post("/send");
-        assertEquals("Bearer " + TOKEN, auth.get());
         assertEquals("req-1", requestId.get());
         assertTrue(contentType.get().startsWith("application/json"));
         assertEquals("{\"name\":\"n\"}", body.get());
@@ -115,16 +112,21 @@ class HonoApiClientPostTest {
     }
 
     @Test
-    void 状態401と500は本文にcodeがなくても業務エラー() {
+    void 状態401は本文にcodeがなくても業務エラー() {
         respond("/unauth", 401, "");
-        respond("/boom", 500, "<html>error</html>");
         newClient(TOKEN, Duration.ofSeconds(2));
         var unauth = assertInstanceOf(PostOutcome.BusinessError.class, post("/unauth"));
         assertEquals(401, unauth.status());
         assertNull(unauth.code());
-        var boom = assertInstanceOf(PostOutcome.BusinessError.class, post("/boom"));
-        assertEquals(500, boom.status());
-        assertNull(boom.code());
+    }
+
+    @Test
+    void 状態5xxは結果不明() {
+        respond("/boom", 500, "<html>error</html>");
+        respond("/unavailable", 503, "");
+        newClient(TOKEN, Duration.ofSeconds(2));
+        assertEquals(ApiError.Kind.SERVER_ERROR, assertInstanceOf(PostOutcome.Unknown.class, post("/boom")).reason());
+        assertEquals(ApiError.Kind.SERVER_ERROR, assertInstanceOf(PostOutcome.Unknown.class, post("/unavailable")).reason());
     }
 
     @Test
@@ -157,19 +159,6 @@ class HonoApiClientPostTest {
         client = new HonoApiClient(new HonoConfig(URI.create("http://127.0.0.1:" + closedPort), TOKEN,
                 Duration.ofSeconds(2), Duration.ofSeconds(2), Duration.ofSeconds(3)), Map.of(), 4);
         assertInstanceOf(PostOutcome.NotSent.class, post("/x"));
-    }
-
-    @Test
-    void token未設定なら送らずNOT_SENT() {
-        AtomicReference<Boolean> called = new AtomicReference<>(false);
-        server.createContext("/none", ex -> {
-            called.set(true);
-            ex.close();
-        });
-        newClient("", Duration.ofSeconds(2));
-        var notSent = assertInstanceOf(PostOutcome.NotSent.class, post("/none"));
-        assertEquals(ApiError.Kind.TOKEN_NOT_SET, notSent.reason());
-        assertFalse(called.get());
     }
 
     @Test

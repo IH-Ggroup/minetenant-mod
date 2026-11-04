@@ -10,7 +10,7 @@ public sealed interface PostOutcome<T> {
     record Success<T>(T data) implements PostOutcome<T> {
     }
 
-    /** Honoが応答した確定済みのエラー。codeは本文にあるときだけ入る(401・500などはnull)。 */
+    /** Honoが応答した確定済みのエラー。codeは本文にあるときだけ入る(401などはnull)。 */
     record BusinessError<T>(int status, String code, String message) implements PostOutcome<T> {
 
         /** messageは利用者入力を含みうるため、toStringに出さない。 */
@@ -20,7 +20,7 @@ public sealed interface PostOutcome<T> {
         }
     }
 
-    /** timeoutや送信後の切断、成功statusなのに本文が不正など、結果が分からない。 */
+    /** timeoutや送信後の切断、5xx、成功statusなのに本文が不正など、結果が分からない。 */
     record Unknown<T>(ApiError.Kind reason) implements PostOutcome<T> {
     }
 
