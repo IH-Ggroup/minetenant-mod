@@ -36,3 +36,4 @@ config/minetenant-server.properties
 **/run/config/minetenant-server.properties
 
 */run
+*/logs
