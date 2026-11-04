@@ -5,7 +5,6 @@ import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /** `{ "data": T }` 形式のレスポンス本文を指定した型へ変換する。 */
@@ -34,7 +33,8 @@ public final class JsonCodec {
             }
             T value = (T) GSON.fromJson(data, type);
             return value == null ? invalid() : new ApiResult.Success<>(value);
-        } catch (JsonParseException e) {
+        } catch (RuntimeException e) {
+            // JSONの構文エラーに加え、recordのコンストラクタ検証などDTO変換中の例外もまとめて扱う
             return invalid();
         }
     }
