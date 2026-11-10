@@ -53,7 +53,7 @@ public final class JsonCodec {
             }
             JsonObject object = root.getAsJsonObject();
             return new ErrorBody(text(object.get("code")), text(object.get("message")));
-        } catch (JsonParseException e) {
+        } catch (RuntimeException e) {
             return new ErrorBody(null, null);
         }
     }
