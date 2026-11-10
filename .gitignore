@@ -34,3 +34,6 @@ build/
 # Server設定（tokenを含む）
 config/minetenant-server.properties
 **/run/config/minetenant-server.properties
+
+*/run
+*/logs
