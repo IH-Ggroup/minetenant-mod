@@ -25,6 +25,14 @@ class HonoApiClientTest {
     record Item(String id) {
     }
 
+    record PricedItem(String id, int price) {
+        PricedItem {
+            if (price <= 0) {
+                throw new IllegalArgumentException("price must be positive");
+            }
+        }
+    }
+
     private HttpServer server;
     private HonoApiClient client;
 
@@ -110,6 +118,14 @@ class HonoApiClientTest {
         respond("/items/bad", 200, "{not json");
         newClient(Duration.ofSeconds(2));
         assertEquals(ApiError.Kind.INVALID_JSON, kindOf(get("/items/bad")));
+    }
+
+    @Test
+    void DTO変換で例外が出てもFutureは例外終了せずINVALID_JSON() {
+        respond("/items/noprice", 200, "{\"data\":{\"id\":\"a\"}}");
+        newClient(Duration.ofSeconds(2));
+        ApiResult<PricedItem> r = assertDoesNotThrow(() -> client.get("/items/noprice", PricedItem.class).join());
+        assertEquals(ApiError.Kind.INVALID_JSON, kindOf(r));
     }
 
     @Test

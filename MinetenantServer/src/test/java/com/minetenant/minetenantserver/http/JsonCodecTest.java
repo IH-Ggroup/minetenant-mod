@@ -13,6 +13,14 @@ class JsonCodecTest {
     record Item(String id, int price) {
     }
 
+    record PricedItem(String id, int price) {
+        PricedItem {
+            if (price <= 0) {
+                throw new IllegalArgumentException("price must be positive");
+            }
+        }
+    }
+
     private static ApiError errorOf(ApiResult<?> result) {
         return assertInstanceOf(ApiResult.Failure.class, result).error();
     }
@@ -49,6 +57,12 @@ class JsonCodecTest {
     void 型が合わないdataはINVALID_JSON() {
         assertEquals(ApiError.Kind.INVALID_JSON,
                 errorOf(JsonCodec.decode("{\"data\":{\"id\":\"a\",\"price\":\"x\"}}", Item.class)).kind());
+    }
+
+    @Test
+    void DTOのコンストラクタ検証で例外が出てもINVALID_JSON() {
+        assertEquals(ApiError.Kind.INVALID_JSON,
+                errorOf(JsonCodec.decode("{\"data\":{\"id\":\"a\"}}", PricedItem.class)).kind());
     }
 
     @Test
