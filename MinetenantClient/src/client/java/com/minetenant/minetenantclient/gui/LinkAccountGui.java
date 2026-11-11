@@ -1,9 +1,6 @@
 package com.minetenant.minetenantclient.gui;
 
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyInput;
-
-import org.lwjgl.glfw.GLFW;
 
 import fi.dy.masa.malilib.gui.BaseScreen;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -23,7 +20,7 @@ import com.minetenant.minetenantclient.link.TickScheduler;
 /**
  * 連携コード入力画面。入力欄・送信・戻るのボタンと、状態の表示だけを担当する。
  * 状態遷移と検証は LinkUiState に任せる。
- * 送信はEnter、戻るはEscのキーでも操作できる。
+ * 操作は他のMaLiLib画面に合わせ、送信・戻るともボタンで行う(Escでも戻れる)。
  * 入力したコードはこの画面の入力欄にだけ置き、成功時と画面を閉じたときに消す。
  */
 public class LinkAccountGui extends BaseScreen {
@@ -90,21 +87,9 @@ public class LinkAccountGui extends BaseScreen {
         this.addButton(backButton, (btn, mouseButton) -> this.closeGui(true));
     }
 
-    /** ボタンとEnterの両方から呼ぶ。送信中の二重送信は LinkUiState が無視する。 */
+    /** 送信ボタンから呼ぶ。送信中の二重送信は LinkUiState が無視する。 */
     private void submit() {
         this.state.submit(this.codeField.getTextWrapper());
-    }
-
-    @Override
-    public boolean onKeyTyped(KeyInput input) {
-        int key = input.key();
-
-        if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
-            this.submit();
-            return true;
-        }
-
-        return super.onKeyTyped(input);
     }
 
     @Override
