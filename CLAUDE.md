@@ -4,6 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 変更をcommit,pushする前にユーザーに確認を行うこと。
 - コミットメッセージとソースコード内のコメント・メッセージ・説明は、日本語で簡潔に書く。
 - ただし、ログ出力(`LOGGER`など)と例外メッセージは、文字化け防止のため英語で書く。
+- mod自体のバージョン表記ルールは[docs/version.md](docs/version.md)を参照すること。
 
 # ブランチ
 - 通常は`develop`から作業ブランチを作り、作業が完了したら`develop`にマージする。
