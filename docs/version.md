@@ -1,5 +1,8 @@
 # modバージョン表記ルール
 
+- このバージョン表記ルールは、`MineTenant Client` と `MineTenant Server` の両方に適用される。
+- callAPIは、バージョン表記ルールの対象外である。
+
 - バージョンは `MAJOR.MINOR.PATCH` の形式で表記する。
 - MAJOR: 後方互換性のない変更があったときに増やす。
 - MINOR: 後方互換性のある機能追加があったときに増やす。
