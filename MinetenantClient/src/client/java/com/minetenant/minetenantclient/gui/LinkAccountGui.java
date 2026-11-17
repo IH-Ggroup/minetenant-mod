@@ -10,12 +10,11 @@ import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.StringUtils;
 
 import com.minetenant.minetenantclient.link.DefaultLinkCodeValidator;
-import com.minetenant.minetenantclient.link.FixtureLinkSubmitter;
 import com.minetenant.minetenantclient.link.LinkCodeValidator;
 import com.minetenant.minetenantclient.link.LinkSubmitter;
 import com.minetenant.minetenantclient.link.LinkUiState;
 import com.minetenant.minetenantclient.link.LinkUiState.Phase;
-import com.minetenant.minetenantclient.link.TickScheduler;
+import com.minetenant.minetenantclient.network.LinkPackets;
 
 /**
  * 連携コード入力画面。入力欄・送信・戻るのボタンと、状態の表示だけを担当する。
@@ -45,7 +44,7 @@ public class LinkAccountGui extends BaseScreen {
     private Phase lastPhase = Phase.IDLE;
 
     public LinkAccountGui(Screen parent) {
-        this(parent, new DefaultLinkCodeValidator(), new FixtureLinkSubmitter(TickScheduler.INSTANCE));
+        this(parent, new DefaultLinkCodeValidator(), LinkPackets.CLIENT);
     }
 
     /** 検証と送信先を差し替えられる。本番では通信する送信先を渡す。 */
