@@ -3,7 +3,7 @@ package com.minetenant.minetenantclient.link;
 import java.util.function.Consumer;
 
 /**
- * 連携コードの送信先。今回はfixture実装だけ。後でpacket送信に差し替える。
+ * 連携コードの送信先。通常は LinkPacketClient(packet送信)、画面確認やテストでは FixtureLinkSubmitter を使う。
  * onResult は、実装側が呼び出し元(GUI)のスレッドで呼ぶこと。
  */
 public interface LinkSubmitter {
