@@ -16,6 +16,7 @@ import com.minetenant.minetenantclient.Reference;
 import com.minetenant.minetenantclient.config.ConfigHandler;
 import com.minetenant.minetenantclient.config.HotkeyHandler;
 import com.minetenant.minetenantclient.gui.GuiConfigs;
+import com.minetenant.minetenantclient.link.TickScheduler;
 import com.minetenant.minetenantclient.network.ServerPingClient;
 import com.minetenant.minetenantclient.network.PongPayload;
 
@@ -33,6 +34,9 @@ public class MinetenantclientClient implements ClientModInitializer {
         // 疎通確認: Pong受信、タイムアウト判定、切断時のリセット
         ClientPlayNetworking.registerGlobalReceiver(PongPayload.ID, (payload, context) -> ServerPingClient.onPong(payload));
         ClientTickEvents.END_CLIENT_TICK.register(client -> ServerPingClient.onClientTick());
+
+        // 連携コード入力のfixture用に、tick後実行を動かす
+        ClientTickEvents.END_CLIENT_TICK.register(client -> TickScheduler.INSTANCE.onTick());
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ServerPingClient.reset());
 
         // 初回表示からMOD切り替えプルダウンを出すため、設定画面を先に登録しておく

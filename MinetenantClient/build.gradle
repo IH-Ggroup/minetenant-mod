@@ -51,6 +51,13 @@ dependencies {
         modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     modImplementation "maven.modrinth:GcWjdA9I:loabWpyU"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.10.2"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 processResources {
