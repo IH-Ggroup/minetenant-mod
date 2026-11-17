@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import com.minetenant.minetenantserver.config.HonoConfig;
 import com.minetenant.minetenantserver.config.HonoConfigLoader;
 import com.minetenant.minetenantserver.http.HonoApiClient;
+import com.minetenant.minetenantserver.network.LinkAccountRequest;
+import com.minetenant.minetenantserver.network.LinkAccountResponse;
 import com.minetenant.minetenantserver.network.PingPayload;
 import com.minetenant.minetenantserver.network.PongPayload;
 
@@ -49,6 +51,10 @@ public class Minetenantserver implements ModInitializer {
 
         PayloadTypeRegistry.playC2S().register(PingPayload.ID, PingPayload.CODEC);
         PayloadTypeRegistry.playS2C().register(PongPayload.ID, PongPayload.CODEC);
+
+        // 連携コードの受信と結果の返信
+        PayloadTypeRegistry.playC2S().register(LinkAccountRequest.ID, LinkAccountRequest.CODEC);
+        PayloadTypeRegistry.playS2C().register(LinkAccountResponse.ID, LinkAccountResponse.CODEC);
 
         // Ping を受けたら、受け取った値をそのまま Pong で返す
         ServerPlayNetworking.registerGlobalReceiver(PingPayload.ID, (payload, context) -> {
