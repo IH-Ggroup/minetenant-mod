@@ -6,15 +6,22 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.minetenant.minetenantserver.catalog.FixtureCatalogService;
+import com.minetenant.minetenantserver.catalog.ProductStatus;
+import com.minetenant.minetenantserver.catalog.ProductSummary;
 import com.minetenant.minetenantserver.config.HonoConfig;
 import com.minetenant.minetenantserver.config.HonoConfigLoader;
 import com.minetenant.minetenantserver.http.HonoApiClient;
 import com.minetenant.minetenantserver.link.FixtureLinkService;
+import com.minetenant.minetenantserver.network.CatalogPacketHandler;
+import com.minetenant.minetenantserver.network.CatalogRequest;
+import com.minetenant.minetenantserver.network.CatalogResponse;
 import com.minetenant.minetenantserver.network.LinkAccountRequest;
 import com.minetenant.minetenantserver.network.LinkAccountResponse;
 import com.minetenant.minetenantserver.network.LinkPacketHandler;
@@ -60,6 +67,18 @@ public class Minetenantserver implements ModInitializer {
 
         // 連携コード: 今はfixtureで判定する(Hono接続は別Issue)
         LinkPacketHandler.register(new FixtureLinkService());
+
+        // 商品一覧の受信と結果の返信
+        PayloadTypeRegistry.playC2S().register(CatalogRequest.ID, CatalogRequest.CODEC);
+        PayloadTypeRegistry.playS2C().register(CatalogResponse.ID, CatalogResponse.CODEC);
+
+        // 商品一覧: 今はfixtureで返す(Hono接続は別Issue)。店舗登録(#39)ができるまではfixtureの店舗を登録済みとみなす
+        Map<String, List<ProductSummary>> fixtureProducts = Map.of(
+                "store-a", List.of(
+                        new ProductSummary("product-a1", "store-a", "Sample shirt", 1000, ProductStatus.AVAILABLE),
+                        new ProductSummary("product-a2", "store-a", "Sample hat", 500, ProductStatus.SOLD)),
+                "store-empty", List.of());
+        CatalogPacketHandler.register(new FixtureCatalogService(fixtureProducts), fixtureProducts::containsKey);
 
         // Ping を受けたら、受け取った値をそのまま Pong で返す
         ServerPlayNetworking.registerGlobalReceiver(PingPayload.ID, (payload, context) -> {
