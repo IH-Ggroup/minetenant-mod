@@ -4,6 +4,7 @@ package com.minetenant.minetenantserver.http;
 public record ApiError(Kind kind, int status) {
 
     public enum Kind {
+        UNAUTHORIZED("API authentication failed"),
         NOT_FOUND("Resource not found"),
         SERVER_ERROR("API server error"),
         HTTP_ERROR("Unexpected HTTP status"),

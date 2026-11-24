@@ -155,7 +155,8 @@ public final class HonoApiClient implements AutoCloseable {
         if (status == 200) {
             return JsonCodec.decode(response.body(), type);
         }
-        ApiError.Kind kind = status == 404 ? ApiError.Kind.NOT_FOUND
+        ApiError.Kind kind = status == 401 ? ApiError.Kind.UNAUTHORIZED
+                : status == 404 ? ApiError.Kind.NOT_FOUND
                 : status >= 500 ? ApiError.Kind.SERVER_ERROR
                 : ApiError.Kind.HTTP_ERROR;
         return new ApiResult.Failure<>(new ApiError(kind, status));

@@ -3,6 +3,8 @@ package com.minetenant.minetenantclient;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
+import com.minetenant.minetenantclient.network.CatalogRequest;
+import com.minetenant.minetenantclient.network.CatalogResponse;
 import com.minetenant.minetenantclient.network.LinkAccountRequest;
 import com.minetenant.minetenantclient.network.LinkAccountResponse;
 import com.minetenant.minetenantclient.network.PingPayload;
@@ -18,5 +20,9 @@ public class Minetenantclient implements ModInitializer {
         // 連携コードの送信と結果の受信
         PayloadTypeRegistry.playC2S().register(LinkAccountRequest.ID, LinkAccountRequest.CODEC);
         PayloadTypeRegistry.playS2C().register(LinkAccountResponse.ID, LinkAccountResponse.CODEC);
+
+        // 商品一覧の要求と結果の受信
+        PayloadTypeRegistry.playC2S().register(CatalogRequest.ID, CatalogRequest.CODEC);
+        PayloadTypeRegistry.playS2C().register(CatalogResponse.ID, CatalogResponse.CODEC);
     }
 }

@@ -98,6 +98,15 @@ class HonoApiClientTest {
     }
 
     @Test
+    void 状態401はUNAUTHORIZED() {
+        respond("/items/secret", 401, "{\"message\":\"unauthorized\"}");
+        newClient(Duration.ofSeconds(2));
+        ApiError error = assertInstanceOf(ApiResult.Failure.class, get("/items/secret")).error();
+        assertEquals(ApiError.Kind.UNAUTHORIZED, error.kind());
+        assertEquals(401, error.status());
+    }
+
+    @Test
     void 状態500はSERVER_ERROR() {
         respond("/items/err", 500, "{\"message\":\"boom\"}");
         newClient(Duration.ofSeconds(2));
