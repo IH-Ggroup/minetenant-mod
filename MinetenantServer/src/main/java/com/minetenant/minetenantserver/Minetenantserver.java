@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.minetenant.minetenantserver.catalog.FixtureCatalogService;
+import com.minetenant.minetenantserver.catalog.HonoProductDetailService;
 import com.minetenant.minetenantserver.catalog.ProductStatus;
 import com.minetenant.minetenantserver.catalog.ProductSummary;
 import com.minetenant.minetenantserver.config.HonoConfig;
@@ -27,6 +28,9 @@ import com.minetenant.minetenantserver.network.LinkAccountResponse;
 import com.minetenant.minetenantserver.network.LinkPacketHandler;
 import com.minetenant.minetenantserver.network.PingPayload;
 import com.minetenant.minetenantserver.network.PongPayload;
+import com.minetenant.minetenantserver.network.ProductDetailPacketHandler;
+import com.minetenant.minetenantserver.network.ProductDetailRequest;
+import com.minetenant.minetenantserver.network.ProductDetailResponse;
 
 public class Minetenantserver implements ModInitializer {
 
@@ -79,6 +83,11 @@ public class Minetenantserver implements ModInitializer {
                         new ProductSummary("product-a2", "store-a", "Sample hat", 500, ProductStatus.SOLD)),
                 "store-empty", List.of());
         CatalogPacketHandler.register(new FixtureCatalogService(fixtureProducts), fixtureProducts::containsKey);
+
+        // 商品詳細の受信と結果の返信。Honoから毎回最新を取得する(公開GETなのでServer認証は不要)
+        PayloadTypeRegistry.playC2S().register(ProductDetailRequest.ID, ProductDetailRequest.CODEC);
+        PayloadTypeRegistry.playS2C().register(ProductDetailResponse.ID, ProductDetailResponse.CODEC);
+        ProductDetailPacketHandler.register(new HonoProductDetailService(apiClient));
 
         // Ping を受けたら、受け取った値をそのまま Pong で返す
         ServerPlayNetworking.registerGlobalReceiver(PingPayload.ID, (payload, context) -> {
