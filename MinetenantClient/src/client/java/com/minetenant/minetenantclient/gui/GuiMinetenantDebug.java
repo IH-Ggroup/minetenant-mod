@@ -12,6 +12,7 @@ import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.StringUtils;
 
 import com.minetenant.minetenantclient.debug.DebugLog;
+import com.minetenant.minetenantclient.gui.ProductListFixtureLauncher.Fixture;
 import com.minetenant.minetenantclient.network.ApiClient;
 import com.minetenant.minetenantclient.network.ServerPingClient;
 
@@ -24,9 +25,10 @@ public class GuiMinetenantDebug extends BaseScreen {
 
     private static final int BUTTON_WIDTH = 150;
     private static final int BUTTON_HEIGHT = 20;
+    private static final int FIXTURE_BUTTON_WIDTH = 80;
     private static final int MARGIN = 10;
     private static final int LINE_HEIGHT = 12;
-    private static final int LOG_TOP = 70;
+    private static final int LOG_TOP = 100;
 
     private static final int COLOR_INFO = 0xFFFFFFFF;
     private static final int COLOR_SUCCESS = 0xFF55FF55;
@@ -54,6 +56,15 @@ public class GuiMinetenantDebug extends BaseScreen {
         ButtonGeneric clearButton = new ButtonGeneric(MARGIN + (BUTTON_WIDTH + 4) * 2, 30, BUTTON_WIDTH, BUTTON_HEIGHT,
                 StringUtils.translate("minetenantclient.gui.button.clear_log"));
         this.addButton(clearButton, (btn, mouseButton) -> DebugLog.clear());
+
+        // 商品一覧GUIの画面状態をfixtureで確認する
+        int fixtureX = MARGIN;
+        for (Fixture fixture : Fixture.values()) {
+            ButtonGeneric button = new ButtonGeneric(fixtureX, 54, FIXTURE_BUTTON_WIDTH, BUTTON_HEIGHT,
+                    StringUtils.translate(fixture.labelKey()));
+            this.addButton(button, (btn, mouseButton) -> ProductListFixtureLauncher.open(this, fixture));
+            fixtureX += FIXTURE_BUTTON_WIDTH + 4;
+        }
     }
 
     @Override
