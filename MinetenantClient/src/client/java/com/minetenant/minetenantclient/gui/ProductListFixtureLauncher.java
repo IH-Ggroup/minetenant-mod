@@ -13,6 +13,8 @@ import com.minetenant.minetenantclient.catalog.ProductDetailFixtures;
 import com.minetenant.minetenantclient.catalog.ProductDetailUiState;
 import com.minetenant.minetenantclient.catalog.ProductListFixtures;
 import com.minetenant.minetenantclient.catalog.ProductListUiState;
+import com.minetenant.minetenantclient.catalog.ProductDetailViewModel;
+import com.minetenant.minetenantclient.catalog.PurchaseConfirmState;
 import com.minetenant.minetenantclient.debug.DebugLog;
 
 /**
@@ -125,6 +127,22 @@ public final class ProductListFixtureLauncher {
         BaseScreen.openScreen(new ProductDetailGui(list, state));
     }
 
+    /** 購入確認を開く。購入できない商品(sold)のときは開かない。確定はログに記録するだけで、送信はしない。 */
+    public static void openPurchaseConfirm(Screen parent, ProductDetailViewModel product) {
+        PurchaseConfirmState.open(product, new PurchaseConfirmState.Listener() {
+            @Override
+            public void onConfirm(String productId) {
+                DebugLog.add(DebugLog.Level.INFO,
+                        String.format(StringUtils.translate("minetenantclient.debug.log.purchase_confirmed"), productId));
+            }
+
+            @Override
+            public void onBack() {
+                MinecraftClient.getInstance().setScreen(parent);
+            }
+        }).ifPresent(state -> BaseScreen.openScreen(new PurchaseConfirmGui(parent, state)));
+    }
+
     private static ProductDetailUiState newDetailState(Screen parent) {
         ProductDetailUiState[] holder = new ProductDetailUiState[1];
 
@@ -143,8 +161,7 @@ public final class ProductListFixtureLauncher {
 
             @Override
             public void onPurchase(String id) {
-                DebugLog.add(DebugLog.Level.INFO,
-                        String.format(StringUtils.translate("minetenantclient.debug.log.product_purchase"), id));
+                openPurchaseConfirm(MinecraftClient.getInstance().currentScreen, holder[0].detail());
             }
         });
 

@@ -63,6 +63,13 @@
     "minetenantclient.gui.button.fixture_detail_error": "Detail: error",
     "minetenantclient.gui.button.fixture_detail_long": "Detail: long",
     "minetenantclient.debug.log.product_purchase": "Proceed to purchase: %s",
+    "minetenantclient.gui.title.purchase_confirm": "Confirm purchase",
+    "minetenantclient.gui.button.purchase_confirm": "Confirm purchase",
+    "minetenantclient.gui.purchase_confirm.question": "Buy this product?",
+    "minetenantclient.gui.purchase_confirm.unique_note": "This is a one-of-a-kind item and cannot be undone",
+    "minetenantclient.gui.purchase_confirm.loading": "Processing...",
+    "minetenantclient.gui.button.fixture_purchase_confirm": "Confirm",
+    "minetenantclient.debug.log.purchase_confirmed": "Purchase confirmed: %s",
 
     "config.comment.enablefeature": "Enable the feature",
     "config.comment.speed": "Speed setting",
