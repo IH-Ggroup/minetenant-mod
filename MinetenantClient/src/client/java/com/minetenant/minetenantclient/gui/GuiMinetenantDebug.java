@@ -11,6 +11,8 @@ import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.StringUtils;
 
+import com.minetenant.minetenantclient.catalog.ProductDetailFixtures;
+import com.minetenant.minetenantclient.catalog.ProductDetailViewModel;
 import com.minetenant.minetenantclient.debug.DebugLog;
 import com.minetenant.minetenantclient.gui.ProductListFixtureLauncher.DetailFixture;
 import com.minetenant.minetenantclient.gui.ProductListFixtureLauncher.Fixture;
@@ -66,6 +68,12 @@ public class GuiMinetenantDebug extends BaseScreen {
             this.addButton(button, (btn, mouseButton) -> ProductListFixtureLauncher.open(this, fixture));
             fixtureX += FIXTURE_BUTTON_WIDTH + 4;
         }
+
+        // 購入確認GUIをfixtureで確認する
+        ButtonGeneric confirmButton = new ButtonGeneric(MARGIN, 98, FIXTURE_BUTTON_WIDTH, BUTTON_HEIGHT,
+                StringUtils.translate("minetenantclient.gui.button.fixture_purchase_confirm"));
+        this.addButton(confirmButton, (btn, mouseButton) -> ProductListFixtureLauncher.openPurchaseConfirm(this,
+                ProductDetailViewModel.from(ProductDetailFixtures.available())));
 
         // 商品詳細GUIの画面状態をfixtureで確認する
         int detailX = MARGIN;

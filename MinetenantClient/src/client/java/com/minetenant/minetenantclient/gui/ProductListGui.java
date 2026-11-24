@@ -84,14 +84,10 @@ public class ProductListGui extends GuiListBase<ProductSummaryViewModel, Product
     @Override
     protected ProductListWidget createListWidget(int listX, int listY) {
         return new ProductListWidget(listX, listY, this.getBrowserWidth(), this.getBrowserHeight(),
-                this.state.items(), this, this::onEntryClick);
+                this.state.items(), this, this::select);
     }
 
     /** 詳細へ進む前に、選んだ商品とスクロール位置を覚える。選べない商品(sold)は覚えない。 */
-    private void onEntryClick(ProductSummaryViewModel entry) {
-        this.select(entry);
-    }
-
     private void select(ProductSummaryViewModel entry) {
         if (!entry.selectable() || this.state.phase() != Phase.LIST) {
             return;

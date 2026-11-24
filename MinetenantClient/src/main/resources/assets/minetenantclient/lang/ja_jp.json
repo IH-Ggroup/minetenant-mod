@@ -63,6 +63,13 @@
     "minetenantclient.gui.button.fixture_detail_error": "詳細:失敗",
     "minetenantclient.gui.button.fixture_detail_long": "詳細:長文",
     "minetenantclient.debug.log.product_purchase": "購入確認へ進む: %s",
+    "minetenantclient.gui.title.purchase_confirm": "購入確認",
+    "minetenantclient.gui.button.purchase_confirm": "購入を確定",
+    "minetenantclient.gui.purchase_confirm.question": "この商品を購入しますか?",
+    "minetenantclient.gui.purchase_confirm.unique_note": "一点物のため、購入後は取り消せません",
+    "minetenantclient.gui.purchase_confirm.loading": "処理中...",
+    "minetenantclient.gui.button.fixture_purchase_confirm": "購入確認",
+    "minetenantclient.debug.log.purchase_confirmed": "購入を確定: %s",
 
     "config.comment.enablefeature": "機能の有効化",
     "config.comment.speed": "速度設定",
