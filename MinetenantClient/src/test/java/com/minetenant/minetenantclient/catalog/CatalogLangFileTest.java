@@ -21,7 +21,12 @@ class CatalogLangFileTest {
             "minetenantclient.gui.product_list.empty",
             "minetenantclient.gui.product_list.error",
             "minetenantclient.gui.button.retry",
-            "minetenantclient.gui.button.close");
+            "minetenantclient.gui.button.close",
+            "minetenantclient.gui.title.product_detail",
+            "minetenantclient.gui.button.purchase",
+            "minetenantclient.gui.product_detail.loading",
+            "minetenantclient.gui.product_detail.not_found",
+            "minetenantclient.gui.product_detail.error");
 
     private static String read(String lang) throws IOException {
         String path = "/assets/minetenantclient/lang/" + lang + ".json";

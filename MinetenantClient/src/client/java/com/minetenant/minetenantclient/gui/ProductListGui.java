@@ -1,5 +1,7 @@
 package com.minetenant.minetenantclient.gui;
 
+import java.util.List;
+
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.gui.screen.Screen;
@@ -11,6 +13,7 @@ import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.StringUtils;
 
+import com.minetenant.minetenantclient.catalog.CatalogNavigationState;
 import com.minetenant.minetenantclient.catalog.ProductListUiState;
 import com.minetenant.minetenantclient.catalog.ProductListUiState.Phase;
 import com.minetenant.minetenantclient.catalog.ProductSummaryViewModel;
@@ -36,14 +39,16 @@ public class ProductListGui extends GuiListBase<ProductSummaryViewModel, Product
     private static final int COLOR_ERROR = 0xFFFF5555;
 
     private final ProductListUiState state;
+    private final CatalogNavigationState navigation;
     private Phase lastPhase;
     /** 矢印キーやクリックで直近に選んだ行 */
     private ProductSummaryViewModel highlighted;
 
-    public ProductListGui(Screen parent, ProductListUiState state) {
+    public ProductListGui(Screen parent, ProductListUiState state, CatalogNavigationState navigation) {
         super(LIST_X, LIST_Y);
 
         this.state = state;
+        this.navigation = navigation;
         this.lastPhase = state.phase();
         this.setTitle(StringUtils.translate("minetenantclient.gui.title.product_list"));
         this.setParent(parent);
@@ -72,12 +77,48 @@ public class ProductListGui extends GuiListBase<ProductSummaryViewModel, Product
         ButtonGeneric close = new ButtonGeneric(x, y, BUTTON_WIDTH, BUTTON_HEIGHT,
                 StringUtils.translate("minetenantclient.gui.button.close"));
         this.addButton(close, (btn, mouseButton) -> this.state.close());
+
+        this.restorePosition();
     }
 
     @Override
     protected ProductListWidget createListWidget(int listX, int listY) {
         return new ProductListWidget(listX, listY, this.getBrowserWidth(), this.getBrowserHeight(),
-                this.state.items(), this, entry -> this.state.select(entry.id()));
+                this.state.items(), this, this::onEntryClick);
+    }
+
+    /** 詳細へ進む前に、選んだ商品とスクロール位置を覚える。選べない商品(sold)は覚えない。 */
+    private void onEntryClick(ProductSummaryViewModel entry) {
+        this.select(entry);
+    }
+
+    private void select(ProductSummaryViewModel entry) {
+        if (!entry.selectable() || this.state.phase() != Phase.LIST) {
+            return;
+        }
+
+        this.navigation.remember(entry.id(), this.getListWidget().getScrollbar().getValue());
+        this.state.select(entry.id());
+    }
+
+    /** 一覧へ戻ったとき、覚えているスクロール位置と選択行を復元する。 */
+    private void restorePosition() {
+        String id = this.navigation.selectedProductId();
+
+        if (id == null || this.state.phase() != Phase.LIST || this.getListWidget() == null) {
+            return;
+        }
+
+        this.getListWidget().getScrollbar().setValue(this.navigation.listScroll());
+
+        List<ProductSummaryViewModel> items = this.state.items();
+
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).id().equals(id)) {
+                this.getListWidget().setLastSelectedEntry(items.get(i), i);
+                break;
+            }
+        }
     }
 
     @Override
@@ -107,7 +148,7 @@ public class ProductListGui extends GuiListBase<ProductSummaryViewModel, Product
         boolean enter = input.key() == GLFW.GLFW_KEY_ENTER || input.key() == GLFW.GLFW_KEY_KP_ENTER;
 
         if (enter && this.state.phase() == Phase.LIST && this.highlighted != null) {
-            this.state.select(this.highlighted.id());
+            this.select(this.highlighted);
             return true;
         }
 
