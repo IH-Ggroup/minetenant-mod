@@ -15,6 +15,7 @@ import fi.dy.masa.malilib.util.data.ModInfo;
 import com.minetenant.minetenantclient.Reference;
 import com.minetenant.minetenantclient.config.ConfigHandler;
 import com.minetenant.minetenantclient.config.HotkeyHandler;
+import com.minetenant.minetenantclient.debug.ProductDetailDebugCommand;
 import com.minetenant.minetenantclient.gui.GuiConfigs;
 import com.minetenant.minetenantclient.link.TickScheduler;
 import com.minetenant.minetenantclient.network.LinkPackets;
@@ -39,6 +40,9 @@ public class MinetenantclientClient implements ClientModInitializer {
         // 連携コード: 結果の受信、tick後実行(タイムアウト用)、切断時の待機破棄
         LinkPackets.register();
         ClientTickEvents.END_CLIENT_TICK.register(client -> TickScheduler.INSTANCE.onTick());
+
+        // 商品詳細の実機確認用コマンド(GUIができたら削除する)
+        ProductDetailDebugCommand.register();
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             ServerPingClient.reset();
             LinkPackets.CLIENT.reset();
