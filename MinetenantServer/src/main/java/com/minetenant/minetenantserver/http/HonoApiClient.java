@@ -38,6 +38,8 @@ public final class HonoApiClient implements AutoCloseable {
     private static final int MAX_THREADS = 4;
     // 仮置き。backendのapi.mdで確定したら直す
     private static final String REQUEST_ID_HEADER = "X-Request-Id";
+    /** Fabric Server認証(Bearer)を付ける対象。api.mdの「保護するpath」に合わせ、このprefix配下だけに付ける。 */
+    private static final String MINECRAFT_PATH_PREFIX = "/api/v1/minecraft/";
 
     private final String baseUrl;
     private final HonoConfig config;
@@ -70,6 +72,10 @@ public final class HonoApiClient implements AutoCloseable {
     }
 
     public <T> CompletableFuture<ApiResult<T>> get(String path, Type type) {
+        if (lacksRequiredToken(path)) {
+            return CompletableFuture.completedFuture(
+                    loggedGet(path, new ApiResult.Failure<>(ApiError.of(ApiError.Kind.UNAUTHORIZED))));
+        }
         return this.<ApiResult<T>>execute(
                 () -> newRequest(path).GET().build(),
                 kind -> loggedGet(path, new ApiResult.Failure<>(ApiError.of(kind))),
@@ -83,10 +89,14 @@ public final class HonoApiClient implements AutoCloseable {
     }
 
     /**
-     * JSON本文をPOSTする。requestIdを付ける。Server認証はbackendの方式が確定するまで付けない。
+     * JSON本文をPOSTする。requestIdを付ける。Minecraft routeにはFabric Server認証(Bearer)を付ける。
      * requestIdは呼び出し側が持ち、結果不明(Unknown)からの再送では同じ値を渡すこと。
      */
     public <T> CompletableFuture<PostOutcome<T>> post(String path, String requestId, Object body, Type type) {
+        if (lacksRequiredToken(path)) {
+            return CompletableFuture.completedFuture(
+                    loggedPost(path, new PostOutcome.NotSent<>(ApiError.Kind.UNAUTHORIZED)));
+        }
         String json;
         try {
             json = JsonCodec.encode(body);
@@ -140,6 +150,16 @@ public final class HonoApiClient implements AutoCloseable {
         });
     }
 
+    /** Minecraft routeなのにtokenが無い場合は、認証なしで送らず未送信にする。 */
+    private boolean lacksRequiredToken(String path) {
+        return isMinecraftPath(path) && !config.hasToken();
+    }
+
+    private static boolean isMinecraftPath(String path) {
+        String normalized = path.startsWith("/") ? path : "/" + path;
+        return stripQuery(normalized).startsWith(MINECRAFT_PATH_PREFIX);
+    }
+
     private HttpRequest.Builder newRequest(String path) {
         String normalized = path.startsWith("/") ? path : "/" + path;
         HttpRequest.Builder builder = HttpRequest.newBuilder()
@@ -147,6 +167,10 @@ public final class HonoApiClient implements AutoCloseable {
                 .timeout(config.readTimeout())
                 .header("Accept", "application/json");
         headers.forEach(builder::header);
+        if (isMinecraftPath(path)) {
+            // 共通headerより後に付け、上書きされないようにする。値はログに出さない
+            builder.setHeader("Authorization", "Bearer " + config.serverToken());
+        }
         return builder;
     }
 
