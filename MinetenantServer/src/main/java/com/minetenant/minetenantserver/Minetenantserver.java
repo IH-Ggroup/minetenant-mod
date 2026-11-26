@@ -55,10 +55,10 @@ public class Minetenantserver implements ModInitializer {
                 FabricLoader.getInstance().getConfigDir().resolve(HonoConfigLoader.FILE_NAME));
         LOGGER.info("Loaded Hono config: {}", config);
         if (!config.hasToken()) {
-            LOGGER.warn("Server token is not set. APIs that require authentication cannot be called");
+            LOGGER.warn("{} is not set. Minecraft APIs cannot be called", HonoConfigLoader.ENV_TOKEN);
         }
 
-        // 認証ヘッダ名はapi.mdで未確定のため、ここでは付けない
+        // Minecraft routeへのAuthorization(Bearer)はHonoApiClientがpathを見て付ける
         apiClient = new HonoApiClient(config, Map.of());
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> apiClient.close());
 
