@@ -5,6 +5,8 @@ public record ApiError(Kind kind, int status) {
 
     public enum Kind {
         UNAUTHORIZED("API authentication failed"),
+        FORBIDDEN("API operation not authorized"),
+        AUTH_UNAVAILABLE("API authentication unavailable"),
         NOT_FOUND("Resource not found"),
         SERVER_ERROR("API server error"),
         HTTP_ERROR("Unexpected HTTP status"),

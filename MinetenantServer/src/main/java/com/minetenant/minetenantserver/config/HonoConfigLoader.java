@@ -10,25 +10,28 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.UnaryOperator;
 
 public final class HonoConfigLoader {
 
     public static final String FILE_NAME = "minetenant-server.properties";
 
     static final String KEY_BASE_URL = "hono.base-url";
-    static final String KEY_TOKEN = "hono.server-token";
+    /** Fabric Dedicated Serverの資格情報を読む環境変数名(api.mdの「Fabric Dedicated Server認証」)。 */
+    public static final String ENV_TOKEN = "MINETENANT_FABRIC_SERVER_TOKEN";
     static final String KEY_CONNECT_TIMEOUT = "hono.connect-timeout-seconds";
     static final String KEY_READ_TIMEOUT = "hono.read-timeout-seconds";
     static final String KEY_POLL_INTERVAL = "hono.poll-interval-seconds";
 
     private static final long MIN_POLL_SECONDS = 2;
+    private static final int MIN_TOKEN_LENGTH = 64;
+    private static final int MAX_TOKEN_LENGTH = 256;
 
     private static final String TEMPLATE = """
             # MineTenant Server 設定
             # Honoのbase URL。endpointは含めない
             hono.base-url=http://localhost:8787
-            # Server token。発行後に設定する（未設定でも起動はできる）
-            hono.server-token=
+            # Server tokenはこのファイルに書かず、環境変数MINETENANT_FABRIC_SERVER_TOKENで渡す
             # 接続タイムアウト（秒、1以上）
             hono.connect-timeout-seconds=5
             # 読み取りタイムアウト（秒、1以上）
@@ -51,18 +54,18 @@ public final class HonoConfigLoader {
             try (InputStream in = Files.newInputStream(file)) {
                 props.load(new java.io.InputStreamReader(in, StandardCharsets.UTF_8));
             }
-            return parse(props);
+            return parse(props, System::getenv);
         } catch (IOException e) {
             throw new HonoConfigException("Failed to read or write " + FILE_NAME + ": " + e.getMessage(), e);
         }
     }
 
     /** 検証して設定を作る。エラーは全項目分をまとめて報告する。 */
-    public static HonoConfig parse(Properties props) {
+    public static HonoConfig parse(Properties props, UnaryOperator<String> env) {
         List<String> errors = new ArrayList<>();
 
         URI baseUrl = parseUrl(props, errors);
-        String token = props.getProperty(KEY_TOKEN, "").trim();
+        String token = parseToken(env, errors);
         Duration connect = parseSeconds(props, KEY_CONNECT_TIMEOUT, 1, errors);
         Duration read = parseSeconds(props, KEY_READ_TIMEOUT, 1, errors);
         Duration poll = parseSeconds(props, KEY_POLL_INTERVAL, MIN_POLL_SECONDS, errors);
@@ -71,6 +74,27 @@ public final class HonoConfigLoader {
             throw new HonoConfigException("Invalid " + FILE_NAME + ":\n - " + String.join("\n - ", errors));
         }
         return new HonoConfig(baseUrl, token, connect, read, poll);
+    }
+
+    /** 未設定は空文字(Minecraft routeを呼ばない)。設定済みなら形式を検証し、trimしない。値はメッセージに出さない。 */
+    private static String parseToken(UnaryOperator<String> env, List<String> errors) {
+        String raw = env.apply(ENV_TOKEN);
+        if (raw == null || raw.isEmpty()) {
+            return "";
+        }
+        if (!isValidToken(raw)) {
+            errors.add(ENV_TOKEN + " must be " + MIN_TOKEN_LENGTH + " to " + MAX_TOKEN_LENGTH
+                    + " printable ASCII characters without whitespace");
+            return "";
+        }
+        return raw;
+    }
+
+    private static boolean isValidToken(String token) {
+        if (token.length() < MIN_TOKEN_LENGTH || token.length() > MAX_TOKEN_LENGTH) {
+            return false;
+        }
+        return token.chars().allMatch(c -> c >= 0x21 && c <= 0x7e);
     }
 
     private static URI parseUrl(Properties props, List<String> errors) {

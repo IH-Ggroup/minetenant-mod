@@ -50,15 +50,31 @@ POSTは副作用があるため、「失敗」と「結果不明」を分ける�
 
 ## ログとtokenの扱い
 
-- tokenはServer設定(`hono.server-token`)だけに置く。Client・packet・ログへ出さない。
+- tokenはServerの環境変数`MINETENANT_FABRIC_SERVER_TOKEN`だけに置く。Client・packet・ログへ出さない。
 - ログに出すのは、結果の種類・status・code・path(クエリ除く)だけ。URL全体、リクエスト本文、エラーの`message`は出さない。
 - `BusinessError.toString()` は`message`を含めない。`HonoConfig.toString()` はtokenを伏せる。
 - ログと例外のメッセージは英語で書く。
 
+## Fabric Server認証(Bearer)
+
+backendの `docs/api.md`「Fabric Dedicated Server認証」の契約に従う。
+
+- `/api/v1/minecraft/` 配下のGET・POSTにだけ `Authorization: Bearer <token>` を付ける。それ以外のpathには付けない。
+- tokenが未設定のときは、認証なしで送らず未送信にする(GETは`UNAUTHORIZED`、POSTは`NotSent(UNAUTHORIZED)`)。
+- 共通headerに`Authorization`があっても、Minecraft routeではtokenの値で上書きする。
+
+| 応答 | code | GETの`ApiError.Kind` | POSTの結果 | 対応 |
+| --- | --- | --- | --- | --- |
+| 401 | `FABRIC_AUTHENTICATION_FAILED` | `UNAUTHORIZED` | `BusinessError` | tokenを直すまで再送しない |
+| 403 | `FABRIC_FORBIDDEN` | `FORBIDDEN` | `BusinessError` | 同じ内容を再送しない |
+| 503 | `FABRIC_AUTHENTICATION_UNAVAILABLE` | `AUTH_UNAVAILABLE` | `NotSent(AUTH_UNAVAILABLE)` | 業務処理前なので未送信扱い。間隔を空けて再送し、運用担当へ知らせる |
+
+- 認証系の失敗は、ログをerrorで出す(token・本文は出さない)。
+- codeが契約と違う403・503は、通常の`HTTP_ERROR`・`SERVER_ERROR`(POSTは`Unknown`)として扱う。
+
 ## 未確定事項(仮置き)
 
-backendの `docs/api.md` では、Fabric Server向けの認証・最終pathは「B-CONTRACT-05以降」で未確定。
-- **Server認証は未実装。** backendで方式を決めて検証処理を作ってから、別PRでクライアント側を入れる(`hono.server-token` の設定項目だけは先に用意してある)。
+backendの `docs/api.md` では、Fabric Server向けの最終pathは「B-CONTRACT-05以降」で未確定。
 - request ID header: `X-Request-Id` は仮置き(`HonoApiClient.REQUEST_ID_HEADER`)。
 
 契約が確定したら、この節を消すこと。
@@ -66,4 +82,4 @@ backendのAPIは、本文に `requestId` を持つものがある。その場合
 
 ## テスト
 
-`HonoApiClientTest`(GET)と`HonoApiClientPostTest`(POST)は、JDK標準の`HttpServer`を使ったfake Serverで、status別の結果を確認している。
+`HonoApiClientTest`(GET)、`HonoApiClientPostTest`(POST)、`HonoApiClientAuthTest`・`HonoApiClientAuthErrorTest`(Fabric認証)は、JDK標準の`HttpServer`を使ったfake Serverで、status別の結果を確認している。
